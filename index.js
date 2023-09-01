@@ -9,7 +9,7 @@ app.use(express.urlencoded({extended:false}))//middleware1
 
 app.use((req,res,next)=>{
     // if we send "response" (or) "return" then the server return from this middleware2 itself(i.e, won't run the CRUD operations)
-    // res.send("middleware2");
+    // res.send("middleware2")
     console.log("control passed from middleware1");
     //it is used to pass control from the current middleware function to the next middleware function (or) the final route handler
     next();
