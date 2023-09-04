@@ -74,11 +74,12 @@ const deleteUserById = (req, res) => {
 
 //CRUD operations in express using RESTFUL API(Client Side Rendering(CSR))
 
-app.get("/api/v1/users", getUsers);
-app.get("/api/v1/users/:id", getUserById);
-app.post("/api/v1/users", postUserById);
+app.route("/api/v1/users").get(getUsers).post(postUserById);
 //PUT replaces the entire resource, while PATCH updates part of the resource.
-app.patch("/api/v1/users/:id", updateUserById);
-app.delete("/api/v1/users/:id", deleteUserById);
+app
+  .route("/api/v1/users/:id")
+  .get(getUserById)
+  .patch(updateUserById)
+  .delete(deleteUserById);
 
 app.listen(PORT, () => console.log(`server running at port:${PORT}`));
