@@ -1,9 +1,14 @@
 const express = require("express");
 const morgan = require("morgan");
+const dotenv = require("dotenv");
 const userRouter = require("./Router/userRouter");
 
+dotenv.config({path: "./config.env"})
+
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT;
+
+// console.log(process.env) //It displays both default and user-declared environmental variables from config.env.
 
 //middlewares
 app.use(express.json()); //parsing
