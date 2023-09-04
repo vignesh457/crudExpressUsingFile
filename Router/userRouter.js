@@ -1,19 +1,20 @@
 const express = require("express");
-const {
-  getUsers,
-  getUserById,
-  postUserById,
-  updateUserById,
-  deleteUserById,
-} = require("./../Controllers/userController");
+const userController = require("./../Controllers/userController");
 
-const userRouter = express.Router();
+const router = express.Router();
 
-userRouter.route("/").get(getUsers).post(postUserById);
-userRouter
+//This sub-middleware is specific to the userRouter only and is used for "id" validation before sending the control to routes
+router.param("id", userController.validateId);
+
+router
+.route("/")
+.get(userController.getUsers)
+.post(userController.validateFeilds, userController.postUser);//chaining multiple middlewares(like, validateFeilds, postUser... here)
+
+router
   .route("/:id")
-  .get(getUserById)
-  .patch(updateUserById)
-  .delete(deleteUserById);
+  .get(userController.getUserById)
+  .patch(userController.updateUserById)
+  .delete(userController.deleteUserById);
 
-module.exports = userRouter;
+module.exports = router;

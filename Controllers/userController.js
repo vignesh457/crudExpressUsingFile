@@ -1,20 +1,35 @@
+const fs = require("fs");
 const data = require("./../data.json");
 
+//validation of id(function for middleware)
+exports.validateId = (req, res, next, val) => {
+  if (val > data.length) {
+    return res.status(404).json({ message: `user not found with id:${val}` });
+  }
+  next();
+};
+
+//validate whether all feilds are present or not On post request
+exports.validateFeilds = (req, res, next) => {
+  if (req.body.first_name==null || req.body.last_name==null || req.body.gender==null) {
+    return res.status(404).json({ message: "missing some feilds please check" });
+  }
+  next();
+};
+
 //Read data
-const getUsers = (req, res) => {
+exports.getUsers = (req, res) => {
   res.json(data);
 };
-const getUserById = (req, res) => {
+exports.getUserById = (req, res) => {
   const id = parseInt(req.params.id);
   //Use find() for one match, or filter() for all matches.
   const result = data.find((user) => user.id === id);
-  if (!result) {
-    return res.status(404).json({ message: `user not found with id:${id}` });
-  }
   res.json(result);
 };
+
 //Write data
-const postUserById = (req, res) => {
+exports.postUser = (req, res) => {
   const newData = { id: data.length + 1, ...req.body };
   data.push(newData);
   fs.writeFile("./data.json", JSON.stringify(data), (err) => {
@@ -24,8 +39,9 @@ const postUserById = (req, res) => {
     return res.status(201).send({ status: "success", id: data.length });
   });
 };
+
 //Update data
-const updateUserById = (req, res) => {
+exports.updateUserById = (req, res) => {
   const id = parseInt(req.params.id);
   data.map((user, userIndex) => {
     if (user.id === id) {
@@ -39,8 +55,9 @@ const updateUserById = (req, res) => {
     return res.send({ status: "success", id: id });
   });
 };
+
 //Delete data
-const deleteUserById = (req, res) => {
+exports.deleteUserById = (req, res) => {
   const id = parseInt(req.params.id);
   data.map((user, userIndex) => {
     if (user.id === id) {
@@ -54,12 +71,4 @@ const deleteUserById = (req, res) => {
     }
     return res.send({ status: "success", id: id });
   });
-};
-
-module.exports = {
-  getUsers,
-  getUserById,
-  postUserById,
-  updateUserById,
-  deleteUserById,
 };
