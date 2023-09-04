@@ -15,14 +15,12 @@ app.use((req, res, next) => {
 
 app.use(morgan("tiny")); //logger
 
-//CRUD operations in express using RESTFUL API(Client Side Rendering(CSR))
-
+// Handlers
 //Read data
-app.get("/api/v1/users", (req, res) => {
+const getUsers = (req, res) => {
   res.json(data);
-});
-
-app.get("/api/v1/users/:id", (req, res) => {
+};
+const getUserById = (req, res) => {
   const id = parseInt(req.params.id);
   //Use find() for one match, or filter() for all matches.
   const result = data.find((user) => user.id === id);
@@ -30,10 +28,9 @@ app.get("/api/v1/users/:id", (req, res) => {
     return res.status(404).json({ message: `user not found with id:${id}` });
   }
   res.json(result);
-});
-
+};
 //Write data
-app.post("/api/v1/users", (req, res) => {
+const postUserById = (req, res) => {
   const newData = { id: data.length + 1, ...req.body };
   data.push(newData);
   fs.writeFile("./data.json", JSON.stringify(data), (err) => {
@@ -42,11 +39,9 @@ app.post("/api/v1/users", (req, res) => {
     }
     return res.status(201).send({ status: "success", id: data.length });
   });
-});
-
+};
 //Update data
-//PUT replaces the entire resource, while PATCH updates part of the resource.
-app.patch("/api/v1/users/:id", (req, res) => {
+const updateUserById = (req, res) => {
   const id = parseInt(req.params.id);
   data.map((user, userIndex) => {
     if (user.id === id) {
@@ -59,10 +54,9 @@ app.patch("/api/v1/users/:id", (req, res) => {
     }
     return res.send({ status: "success", id: id });
   });
-});
-
+};
 //Delete data
-app.delete("/api/v1/users/:id", (req, res) => {
+const deleteUserById = (req, res) => {
   const id = parseInt(req.params.id);
   data.map((user, userIndex) => {
     if (user.id === id) {
@@ -76,6 +70,15 @@ app.delete("/api/v1/users/:id", (req, res) => {
     }
     return res.send({ status: "success", id: id });
   });
-});
+};
+
+//CRUD operations in express using RESTFUL API(Client Side Rendering(CSR))
+
+app.get("/api/v1/users", getUsers);
+app.get("/api/v1/users/:id", getUserById);
+app.post("/api/v1/users", postUserById);
+//PUT replaces the entire resource, while PATCH updates part of the resource.
+app.patch("/api/v1/users/:id", updateUserById);
+app.delete("/api/v1/users/:id", deleteUserById);
 
 app.listen(PORT, () => console.log(`server running at port:${PORT}`));
